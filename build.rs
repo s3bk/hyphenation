@@ -229,15 +229,15 @@ fn main() {
               Uppersorbian, Welsh ];
 
     fs::create_dir_all(&dict_out).unwrap();
-
+/*
     // If no dictionary is to be rebuilt, copy the bundled ones into the `target`
     // folder.
     #[cfg(not(any(feature = "build_dictionaries", feature = "nfc", feature = "nfd",
                   feature = "nfkc", feature = "nfkd")))]
     {
-        copy_dir(dict_source.as_path(), dict_out.as_path()).unwrap();
+        copy_dir(dict_source.as_path(), dict_out.as_path()).expect("failed to copy")
     }
-
+*/
     // Otherwise, process the bundled patterns into new dictionaries and similarly
     // bundle them.
     #[cfg(any(feature = "build_dictionaries", feature = "nfc", feature = "nfd",
@@ -306,17 +306,7 @@ pub enum Error {
     // TODO: Parsing
 }
 
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::Build(ref e) => e.description(),
-            Error::Env(ref e) => e.description(),
-            Error::IO(ref e) => e.description(),
-            Error::Serialization(ref e) => e.description(),
-            Error::Resource => "pattern resource creation failed"
-        }
-    }
-}
+impl error::Error for Error {}
 
 impl fmt::Display for Error {
     fn fmt(&self, f : &mut fmt::Formatter) -> fmt::Result {
@@ -325,10 +315,7 @@ impl fmt::Display for Error {
             Error::Env(ref e) => e.fmt(f),
             Error::IO(ref e) => e.fmt(f),
             Error::Serialization(ref e) => e.fmt(f),
-            Error::Resource => {
-                let e = self as &error::Error;
-                e.description().fmt(f)
-            }
+            Error::Resource => write!(f, "Resource")
         }
     }
 }
